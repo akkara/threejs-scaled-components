@@ -1,0 +1,68 @@
+<script async src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js" crossorigin="anonymous"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.179.1/examples/jsm/"
+    }
+  }
+</script>
+<style>
+  body {
+  overflow: hidden;
+  margin: 0;
+}
+</style>
+<script type="module">
+// https://discourse.threejs.org/t/threejs-doesnt-properly-render-objects-those-have-scale-1-1-1/86573
+
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+// general setup, boring, skip to the next comment
+
+console.clear( );
+
+var scene = new THREE.Scene();
+scene.background = new THREE.Color( 'gainsboro' );
+
+var camera = new THREE.PerspectiveCamera( 30, innerWidth/innerHeight );
+    camera.position.set( 7, 2, 10 );
+    camera.lookAt( scene.position );
+
+var renderer = new THREE.WebGLRenderer( {antialias: true} );
+    renderer.setSize( innerWidth, innerHeight );
+    renderer.setAnimationLoop( animationLoop );
+    document.body.appendChild( renderer.domElement );
+			
+window.addEventListener( "resize", (event) => {
+    camera.aspect = innerWidth/innerHeight;
+    camera.updateProjectionMatrix( );
+    renderer.setSize( innerWidth, innerHeight );
+});
+
+var controls = new OrbitControls( camera, renderer.domElement );
+    controls.enableDamping = true;
+
+var light = new THREE.DirectionalLight( 'white', 3 );
+    light.position.set( 1, 2, 3 );
+    scene.add( light );
+
+var modelURL = 'scaled.glb'
+var loader = new GLTFLoader();
+loader.load( modelURL, gltf => {
+	scene.add( gltf.scene );
+	console.log("Object A",gltf.scene.children[0].children[0].children[1])
+	console.log("Object B",gltf.scene.children[0].children[0].children[2])
+	console.log("Object A Scale",gltf.scene.children[0].children[0].children[1].scale)
+	console.log("Object B Scale",gltf.scene.children[0].children[0].children[2].scale)
+} );	
+
+function animationLoop( t )
+{
+    controls.update( );
+		renderer.render( scene, camera );
+}
+
+</script>
